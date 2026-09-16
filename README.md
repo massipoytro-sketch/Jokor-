@@ -1,5 +1,7 @@
 <div align="center">
 
+<img src="assets/jokor-banner.svg" alt="Jokor neon cyberpunk joker banner" width="100%" />
+
 # 🃏 JOKOR
 
 ### FREE FIRE PLAYER INTELLIGENCE PLATFORM
@@ -28,7 +30,7 @@
         ╚══════╝ ╚═════╝ ╚═╝  ╚═╝ ╚═════╝ ╚═╝  ╚═╝
 ```
 
-**JOKOR // PLAYER INTELLIGENCE // API // ANALYTICS // DATA**
+**JOKOR // PLAYER INTEL // API // ANALYTICS // DATA**
 
 </div>
 
@@ -227,6 +229,8 @@ This separation lets Jokor add providers without rewriting the whole API.
 
 ```text
 Jokor-/
+├── assets/
+│   └── jokor-banner.svg
 ├── backend/
 │   ├── api/
 │   │   ├── routes.py
