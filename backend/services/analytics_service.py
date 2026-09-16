@@ -1,8 +1,9 @@
 class AnalyticsService:
     """Provider-agnostic player comparison calculations.
 
-    The service only derives deltas from data returned by the configured
-    provider. It never invents missing player statistics.
+    The current public upstream exposes BR-style player statistics but does
+    not document CS career statistics. Jokor therefore compares real BR data
+    and explicitly reports CS as unavailable instead of duplicating BR values.
     """
 
     def __init__(self, stats_service):
@@ -20,7 +21,7 @@ class AnalyticsService:
 
     @classmethod
     def _mode_metrics(cls, a: dict, b: dict) -> dict:
-        fields = ("matches", "wins", "kills", "deaths", "headshots", "rankingPoints")
+        fields = ("matches", "wins", "kills", "deaths", "headshots", "ranking_points")
         metrics = {}
         for field in fields:
             a_value = cls._number(a, field)
@@ -60,22 +61,20 @@ class AnalyticsService:
     def compare(self, region: str, uid_a: str, uid_b: str) -> dict:
         br_a = self.stats_service.get_stats(region, uid_a, "br")
         br_b = self.stats_service.get_stats(region, uid_b, "br")
-        cs_a = self.stats_service.get_stats(region, uid_a, "cs")
-        cs_b = self.stats_service.get_stats(region, uid_b, "cs")
-        success = all(section.get("success") for section in (br_a, br_b, cs_a, cs_b))
         return {
-            "success": success,
+            "success": bool(br_a.get("success") and br_b.get("success")),
             "players": {
-                "a": {"uid": uid_a, "br": br_a, "cs": cs_a},
-                "b": {"uid": uid_b, "br": br_b, "cs": cs_b},
+                "a": {"uid": uid_a, "br": br_a},
+                "b": {"uid": uid_b, "br": br_b},
             },
             "comparison": {
                 "br": self._mode_metrics(br_a, br_b),
-                "cs": self._mode_metrics(cs_a, cs_b),
+                "cs": {"available": False, "reason": "The public provider does not expose CS career statistics."},
             },
             "metadata": {
                 "region": region,
-                "comparison": "battle_royale_and_clash_squad",
+                "comparison": "battle_royale",
                 "players_compared": 2,
+                "cs_statistics": "unavailable",
             },
         }
