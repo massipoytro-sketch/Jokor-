@@ -83,6 +83,17 @@ def test_player_intelligence_validation_and_safe_fallback():
     assert payload['data']['available_sections'] == []
 
 
+def test_player_comparison_returns_br_and_cs_sections():
+    response = client().get('/api/player/IND/123456789/compare/987654321')
+    assert response.status_code == 200
+    payload = response.get_json()
+    assert payload['success'] is False
+    assert payload['comparison']['br']['win_rate']['delta_a_minus_b'] is None
+    assert payload['comparison']['cs']['headshot_rate']['delta_a_minus_b'] is None
+    assert payload['players']['a']['uid'] == '123456789'
+    assert payload['players']['b']['uid'] == '987654321'
+
+
 def test_invalid_uid():
     response = client().get('/api/player/IND/not-a-uid')
     assert response.status_code == 400
