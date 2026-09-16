@@ -1,7 +1,7 @@
 """Canonical service registry for Jokor.
 
 A service is marked live only when the configured provider can actually supply
-that data. Provider-dependent entries remain explicit so the API never fakes
+data. Provider-dependent entries remain explicit so the API never fakes
 upstream capabilities.
 """
 
@@ -29,6 +29,7 @@ SERVICES = [
     {"id": "wallet", "name": "Wallet Info", "group": "player", "status": "provider-dependent"},
     {"id": "dynamic-duo", "name": "Dynamic Duo", "group": "social", "status": "provider-dependent"},
     {"id": "account-links", "name": "Account Link Intelligence", "group": "account", "status": "provider-dependent"},
+    {"id": "freefire-tcp-protocol", "name": "Free Fire TCP Protocol Adapter", "group": "infrastructure", "status": "provider-dependent"},
     {"id": "api-docs", "name": "OpenAPI Schema", "group": "infrastructure", "status": "planned"},
 ]
 
