@@ -14,6 +14,13 @@ class StatsService:
         try:
             data, provider_name = self.provider.call("get_stats", region, uid, mode)
             payload = dict(data) if isinstance(data, dict) else {"raw": data}
+            if payload.get("available") is False:
+                return {
+                    "success": False,
+                    "error": "STATS_MODE_UNAVAILABLE",
+                    "message": payload.get("reason", "This statistics mode is not available from the current provider."),
+                    "metadata": {"region": region, "uid": uid, "mode": mode, "provider": provider_name},
+                }
             counters = {key: payload.get(key) for key in ("matches", "wins", "kills", "deaths", "headshots")}
             payload["derived"] = derive_metrics(counters)
             return {
