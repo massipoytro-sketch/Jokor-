@@ -1,4 +1,4 @@
-const API = (import.meta.env.VITE_API_URL || '').replace(/\/$/, '');
+const API = (import.meta.env.VITE_API_URL || 'https://jokor.onrender.com').replace(/\/$/, '');
 
 export async function apiGet(path) {
   const response = await fetch(`${API}${path}`, { headers: { Accept: 'application/json' } });
@@ -21,4 +21,4 @@ export const endpoints = {
   guild: (region, guildId) => apiGet(`/api/guild/${encodeURIComponent(region)}/${encodeURIComponent(guildId)}`),
 };
 
-export function apiBase() { return API || 'same-origin'; }
+export function apiBase() { return API; }
