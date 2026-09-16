@@ -1,7 +1,7 @@
 """Canonical service registry for Jokor.
 
 A service is marked live only when the configured provider can actually supply
-data. Provider-dependent entries remain explicit so the API never fakes
+that data. Provider-dependent entries remain explicit so the API never fakes
 upstream capabilities.
 """
 
@@ -19,6 +19,9 @@ SERVICES = [
     {"id": "pets", "name": "Pets Catalog", "group": "game-data", "status": "live"},
     {"id": "cosmetics", "name": "Cosmetics Catalog", "group": "game-data", "status": "live"},
     {"id": "vehicles", "name": "Vehicles Catalog", "group": "game-data", "status": "live"},
+    {"id": "tcp-protocol-diagnostics", "name": "TCP Protocol Diagnostics", "group": "protocol", "status": "live"},
+    {"id": "tcp-transport-probe", "name": "TCP Transport Probe", "group": "protocol", "status": "live"},
+    {"id": "emote-metadata", "name": "Emote Metadata", "group": "protocol", "status": "provider-ready"},
     {"id": "rank-history", "name": "Rank History", "group": "history", "status": "provider-dependent"},
     {"id": "activity-history", "name": "Activity History", "group": "history", "status": "provider-dependent"},
     {"id": "leaderboards", "name": "Leaderboards", "group": "competitive", "status": "provider-dependent"},
@@ -29,7 +32,6 @@ SERVICES = [
     {"id": "wallet", "name": "Wallet Info", "group": "player", "status": "provider-dependent"},
     {"id": "dynamic-duo", "name": "Dynamic Duo", "group": "social", "status": "provider-dependent"},
     {"id": "account-links", "name": "Account Link Intelligence", "group": "account", "status": "provider-dependent"},
-    {"id": "freefire-tcp-protocol", "name": "Free Fire TCP Protocol Adapter", "group": "infrastructure", "status": "provider-dependent"},
     {"id": "api-docs", "name": "OpenAPI Schema", "group": "infrastructure", "status": "planned"},
 ]
 
