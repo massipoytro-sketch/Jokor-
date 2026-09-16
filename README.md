@@ -1,103 +1,76 @@
 <div align="center">
 
-<img src="assets/jokor-banner.svg" alt="Jokor neon cyberpunk joker banner" width="100%" />
+# 🟢🟣 J O K O R
 
-# 🃏 JOKOR
+## <font color="#39ff78">FREE FIRE PLAYER INTELLIGENCE // API // TCP // ANALYTICS</font>
 
-### FREE FIRE PLAYER INTELLIGENCE PLATFORM
+<img src="assets/jokor-neon-loop.svg" alt="Jokor animated neon intelligence banner" width="100%" />
 
-**Scan. Analyze. Compare. Understand.**
+### <font color="#39ff78">SCAN • ANALYZE • COMPARE • DISCOVER</font>
 
-[![Jokor API](https://img.shields.io/badge/JOKOR-ION%20GREEN-39ff78?style=for-the-badge&labelColor=050805)](https://github.com/massipoytro-sketch/Jokor-)
-[![Backend](https://img.shields.io/badge/BACKEND-Flask-111111?style=for-the-badge&logo=flask)](https://github.com/massipoytro-sketch/Jokor-)
-[![Python](https://img.shields.io/badge/PYTHON-3.x-111111?style=for-the-badge&logo=python)](https://www.python.org/)
-[![License](https://img.shields.io/badge/LICENSE-SEE%20REPO-111111?style=for-the-badge)](LICENSE)
+<font color="#d8b4fe">A modular Free Fire intelligence platform built around providers, analytics, protocol diagnostics and a neon console.</font>
 
-> **Jokor is an intelligence-style platform for legitimate Free Fire public information, player analytics, comparisons, game data and provider-backed services.**
+<br/>
+
+[![JOKOR](https://img.shields.io/badge/JOKOR-39FF78?style=for-the-badge&labelColor=050805)](https://github.com/massipoytro-sketch/Jokor-)
+[![TCP](https://img.shields.io/badge/TCP-PROTOCOL-9D4EDD?style=for-the-badge&labelColor=050805)](https://github.com/massipoytro-sketch/Jokor-)
+[![Flask](https://img.shields.io/badge/BACKEND-FLASK-39FF78?style=for-the-badge&labelColor=050805)](https://flask.palletsprojects.com/)
+[![React](https://img.shields.io/badge/FRONTEND-REACT-9D4EDD?style=for-the-badge&labelColor=050805)](https://react.dev/)
 
 </div>
 
 ---
 
-<div align="center">
+## <font color="#39ff78">🟢 WHAT IS JOKOR?</font>
+
+<font color="#d8b4fe">Jokor is not a one-file API. It is a modular intelligence platform for legitimate player information, statistics, comparisons, guild intelligence, game data and provider-backed services.</font>
 
 ```text
-       ███████╗ ██████╗ ██╗  ██╗ ██████╗ ██████╗
-       ╚══███╔╝██╔═══██╗██║ ██╔╝██╔═══██╗██╔══██╗
-          ███╔╝ ██║   ██║█████╔╝ ██║   ██║██████╔╝
-         ███╔╝  ██║   ██║██╔═██╗ ██║   ██║██╔══██╗
-        ███████╗╚██████╔╝██║  ██╗╚██████╔╝██║  ██║
-        ╚══════╝ ╚═════╝ ╚═╝  ╚═╝ ╚═════╝ ╚═╝  ╚═╝
+                         ┌─────────────────────────┐
+                         │          JOKOR           │
+                         │   PLAYER INTELLIGENCE    │
+                         └────────────┬────────────┘
+                                      │
+          ┌───────────────────────────┼──────────────────────────┐
+          ▼                           ▼                          ▼
+   PLAYER INTEL                 GAME DATA                 ANALYTICS
+   Profile / Stats              Ranks / Seasons           K/D / Win Rate
+   Search / Guild               Weapons / Characters     Headshots
+   Compare / History            Pets / Cosmetics         Trends / Deltas
+          │                           │                          │
+          └───────────────────────────┼──────────────────────────┘
+                                      ▼
+                         PROVIDERS / TCP / CACHE / API
 ```
 
-**JOKOR // PLAYER INTEL // API // ANALYTICS // DATA**
+---
 
-</div>
+## <font color="#9d4edd">⚡ JOKOR SERVICE GRID</font>
 
-## 🟢 What is Jokor?
-
-Jokor is being built as a **large modular Free Fire intelligence platform**, not a single API script.
-
-The goal is to bring player lookup, statistics, comparison, guild intelligence, game catalogs, analytics, provider integrations and operational monitoring into one organized system.
-
-```text
-                    ┌─────────────────────┐
-                    │       JOKOR         │
-                    │  PLAYER INTEL CORE  │
-                    └──────────┬──────────┘
-                               │
-       ┌───────────────────────┼────────────────────────┐
-       │                       │                        │
-   PLAYER INTEL           GAME DATA                ANALYTICS
-       │                       │                        │
-   Profiles                 Weapons                 K/D
-   BR / CS Stats            Characters              Win Rate
-   Search                   Pets                    Headshots
-   Guilds                   Cosmetics               Comparisons
-   Compare                  Vehicles                Trends
-       │                       │                        │
-       └───────────────────────┼────────────────────────┘
-                               │
-                    PROVIDERS / CACHE / API
-```
-
-## ☠️ Service Map
-
-### PLAYER INTELLIGENCE
+### <font color="#39ff78">PLAYER INTELLIGENCE</font>
 
 - 👤 Full player profile
-- ⚔️ Battle Royale statistics
-- 🎯 Clash Squad statistics
-- 📈 Derived performance metrics
-- 💀 K/D analysis
-- 🎯 Headshot-rate analysis
-- 🏆 Rank and level information
-- ❤️ Likes / social profile fields when provided
-- 🧩 Profile completeness
-- 🔍 Player search
+- ⚔️ BR statistics
+- 🎯 CS statistics
+- 📊 Derived K/D, win-rate and headshot metrics
+- 🧠 Player Intelligence Scan
+- 📈 Performance / combat indicators
+- 🔎 UID and nickname search architecture
 - ⚖️ Player vs Player comparison
+- 🧩 Profile completeness
+- 🏆 Rank / level / likes fields when supplied by the provider
+- 📜 History architecture for rank and activity data
 
-### 🏰 GUILD INTELLIGENCE
+### <font color="#39ff78">🏰 GUILD INTELLIGENCE</font>
 
 - Guild profile
 - Guild members
-- Guild statistics
 - Member statistics
-- Guild search abstraction
+- Guild statistics
 - Guild comparison foundation
+- Provider-backed guild expansion
 
-### 🧠 ANALYTICS ENGINE
-
-- Win-rate calculations
-- K/D calculations
-- Headshot percentage
-- Match-volume analysis
-- Performance indicators
-- Comparison deltas
-- Profile completeness
-- Future trend/history analysis when real history data is available
-
-### 🗃️ GAME DATA CATALOG
+### <font color="#39ff78">🧬 GAME DATA</font>
 
 - Regions
 - Modes
@@ -110,43 +83,124 @@ The goal is to bring player lookup, statistics, comparison, guild intelligence, 
 - Vehicles
 - Assets / item lookup
 
-### 🌐 API & INFRASTRUCTURE
+### <font color="#9d4edd">🧠 ANALYTICS ENGINE</font>
 
-- Modular Flask API
-- Provider registry
-- Provider fallback architecture
-- Response cache
-- Rate limiting
-- Request IDs
-- Input validation
-- Structured errors
-- Health checks
-- Readiness checks
-- Metrics
-- Service capabilities
-- Versioned API foundation
-
-### 🔌 PROVIDER-DEPENDENT SERVICES
-
-The architecture reserves dedicated service slots for capabilities such as:
-
-- Ban status
-- Friends
-- Login history
-- Wishlist
-- Wallet information
-- Dynamic Duo
-- Live leaderboards
-- Inventory
-- Player history
-
-These are exposed only when a real provider can supply the data. **Jokor never pretends static data is live data.**
+- Win-rate calculations
+- K/D calculations
+- Headshot percentage
+- Match-volume analysis
+- Comparison deltas
+- Performance indicators
+- Profile completeness
+- Future trend/history calculations when real history is available
 
 ---
 
-## 🧪 Current API Surface
+## <font color="#39ff78">🟢 TCP / PROTOCOL LAYER</font>
 
-Core endpoints include:
+Jokor now contains a **separate protocol layer inspired by research of the public `Freefire-TCP-BOT` project**. That project describes TCP communication, custom headers, emote automation and session caching. citeturn0search1
+
+Jokor does **not** copy its credential/session automation. Instead, the safe protocol layer provides:
+
+| Service | Status |
+|---|---|
+| TCP transport probe | 🟢 Ready |
+| Length-prefixed frame inspection | 🟢 Ready |
+| Bounded hexadecimal payload preview | 🟢 Ready |
+| Protocol capability discovery | 🟢 Ready |
+| Emote metadata architecture | 🟣 Provider-ready |
+| Protocol metadata architecture | 🟣 Provider-ready |
+| Live protocol data | 🟡 Provider-dependent |
+
+### <font color="#9d4edd">TCP API</font>
+
+```text
+GET  /api/protocol/tcp/capabilities
+POST /api/protocol/tcp/inspect
+```
+
+The inspector accepts a bounded Base64 frame and returns only diagnostic information such as frame length, remaining bytes and a bounded hexadecimal preview.
+
+<font color="#d8b4fe">It intentionally does not accept passwords, session tokens, cookies or account credentials, and it does not implement account mutations or spam automation.</font>
+
+---
+
+## <font color="#9d4edd">🌌 SERVICES FROM THE JOKOR ECOSYSTEM</font>
+
+```text
+PLAYER
+ ├─ Profile
+ ├─ BR Stats
+ ├─ CS Stats
+ ├─ Intelligence Scan
+ ├─ Compare
+ └─ Search
+
+GUILD
+ ├─ Profile
+ ├─ Members
+ ├─ Statistics
+ └─ Intelligence
+
+GAME DATA
+ ├─ Regions
+ ├─ Ranks
+ ├─ Seasons
+ ├─ Weapons
+ ├─ Characters
+ ├─ Pets
+ ├─ Cosmetics
+ └─ Vehicles
+
+PROTOCOL
+ ├─ TCP Probe
+ ├─ Frame Inspector
+ ├─ Protocol Capabilities
+ ├─ Emote Metadata
+ └─ Protocol Metadata
+
+INFRASTRUCTURE
+ ├─ Provider Registry
+ ├─ Fallback
+ ├─ Cache
+ ├─ Rate Limit
+ ├─ Request IDs
+ ├─ Health
+ ├─ Readiness
+ └─ Metrics
+```
+
+---
+
+## <font color="#39ff78">🔌 PROVIDER ARCHITECTURE</font>
+
+```text
+                         JOKOR API
+                             │
+                   ┌─────────┴─────────┐
+                   │   SERVICE LAYER   │
+                   └─────────┬─────────┘
+                             │
+                    PROVIDER REGISTRY
+                             │
+          ┌──────────────────┼──────────────────┐
+          ▼                  ▼                  ▼
+      Provider A         Provider B        TCP Provider
+          │                  │                  │
+          └──────────────────┼──────────────────┘
+                             ▼
+                        NORMALIZATION
+                             ▼
+                           CACHE
+```
+
+This makes Jokor extensible: a new real provider can be connected without rebuilding the entire API.
+
+---
+
+## <font color="#39ff78">🚀 API SURFACE</font>
+
+### Core
 
 ```text
 GET  /api/meta
@@ -157,13 +211,14 @@ GET  /api/game-info
 GET  /api/player/{region}/{uid}
 GET  /api/player/{region}/{uid}/stats
 GET  /api/player/{region}/{uid}/compare/{other_uid}
+GET  /api/player/{region}/{uid}/intelligence
 GET  /api/search/{region}/{keyword}
 GET  /api/guild/{region}/{guild_id}
 GET  /api/assets/{item_id}
 POST /api/tools/derive-stats
 ```
 
-Catalog and platform endpoints:
+### Catalog
 
 ```text
 GET /api/catalog
@@ -177,60 +232,72 @@ GET /api/characters
 GET /api/pets
 GET /api/cosmetics
 GET /api/vehicles
-GET /api/service-status
-GET /api/capabilities
 ```
 
-> Endpoint availability depends on the configured provider. Static catalog endpoints are intentionally separated from live player data.
-
----
-
-## 🧬 Architecture
+### Platform / Protocol
 
 ```text
-                         CLIENT / FRONTEND
-                                │
-                                ▼
-                         ┌─────────────┐
-                         │ JOKOR API   │
-                         └──────┬──────┘
-                                │
-              ┌─────────────────┼─────────────────┐
-              ▼                 ▼                 ▼
-        VALIDATION          SERVICES           METRICS
-        REQUEST ID          PLAYER             HEALTH
-        RATE LIMIT          STATS              READY
-              │             SEARCH             CACHE
-              │             GUILD
-              │             ANALYTICS
-              │             CATALOG
-              │
-              └────────────────┬────────────────┘
-                               ▼
-                       PROVIDER REGISTRY
-                               │
-                 ┌─────────────┼─────────────┐
-                 ▼             ▼             ▼
-              Provider A    Provider B    Provider C
-                 │             │             │
-                 └─────────────┼─────────────┘
-                               ▼
-                         NORMALIZATION
-                               │
-                               ▼
-                             CACHE
+GET  /api/services
+GET  /api/services/{service_id}
+GET  /api/service-status
+GET  /api/capabilities
+GET  /api/account-links/types
+GET  /api/account-links/{region}/{uid}
+GET  /api/protocol/tcp/capabilities
+POST /api/protocol/tcp/inspect
+GET  /api/system/metrics
+GET  /api/system/health-detail
 ```
 
-This separation lets Jokor add providers without rewriting the whole API.
+<font color="#d8b4fe">Live endpoints depend on a configured provider. Jokor keeps provider-dependent capabilities explicit instead of pretending static data is live.</font>
 
 ---
 
-## 🟩 Project Structure
+## <font color="#9d4edd">🧪 REFERENCE PROJECTS & DIFFERENCE</font>
+
+The public `siambhau/FreeFireApi` currently advertises 34 endpoints across 19 groups, including player info, JWT, ban check, guild tools, friends, wallet, login history, wishlist and more. citeturn0search0
+
+The public `Freefire-TCP-BOT` describes TCP communication, custom headers, emote automation and session caching. citeturn0search1
+
+**Jokor's approach is different:** it combines the useful architectural ideas into a provider-based platform with analytics, normalization, service discovery, protocol diagnostics, frontend console architecture and explicit capability states.
+
+---
+
+## <font color="#39ff78">🛡️ SECURITY BOUNDARY</font>
+
+Jokor is designed for legitimate informational and analytical use.
+
+```text
+ALLOWED / SAFE
+├─ Public player information
+├─ Statistics and analytics
+├─ Comparisons
+├─ Game catalog metadata
+├─ Provider health / diagnostics
+├─ Generic TCP frame inspection
+└─ Official/provider-backed integrations
+
+NOT IMPLEMENTED
+├─ Password collection
+├─ Credential theft
+├─ Session-token theft
+├─ Authentication bypass
+├─ Account takeover
+├─ Unauthorized account binding/unbinding
+├─ Inventory/account mutation
+└─ Spam / abusive automation
+```
+
+---
+
+## <font color="#9d4edd">📁 PROJECT STRUCTURE</font>
 
 ```text
 Jokor-/
 ├── assets/
-│   └── jokor-banner.svg
+│   ├── jokor-banner.svg
+│   └── jokor-neon-loop.svg
+│
 ├── backend/
 │   ├── api/
 │   │   ├── routes.py
@@ -240,123 +307,86 @@ Jokor-/
 │   │   ├── stats_service.py
 │   │   ├── search_service.py
 │   │   ├── guild_service.py
-│   │   ├── asset_service.py
 │   │   ├── analytics_service.py
-│   │   ├── statistics.py
-│   │   ├── game_info.py
-│   │   ├── provider_service.py
-│   │   └── catalog_service.py
-│   ├── adapters/
-│   │   └── freefire/
+│   │   ├── intelligence_service.py
+│   │   ├── catalog_service.py
+│   │   ├── protocol_service.py
+│   │   └── service_registry.py
 │   ├── providers/
+│   │   └── freefire_tcp/
+│   │       ├── client.py
+│   │       └── protocol.py
+│   ├── adapters/
 │   ├── models/
 │   ├── core/
-│   ├── tests/
-│   └── app.py
+│   └── tests/
 │
 ├── frontend/
-│   └── React / Vite interface
+│   └── React / Vite console
 │
 └── README.md
 ```
 
 ---
 
-## 🃏 Design Language
+## <font color="#39ff78">📊 DEVELOPMENT STATUS</font>
 
-Jokor uses an **ion-green + black intelligence-console aesthetic**:
-
-- `#39ff78` ion green
-- Deep black surfaces
-- Neon borders and glow
-- Scanline / grid atmosphere
-- Tactical dashboards
-- Cyberpunk-inspired status panels
-- Clear data visualization
-- Responsive mobile interface
-
-The visual direction is inspired by the **Jokor identity**, while the software architecture is built independently.
-
----
-
-## ⚡ Development Status
-
-| Area | Status |
+| Component | State |
 |---|---|
 | Core API | 🟢 Active |
-| Player service | 🟢 Active |
-| Stats & analytics | 🟢 Active |
-| Search | 🟢 Active |
-| Guild abstraction | 🟢 Active |
-| Catalog foundation | 🟢 Active |
-| Provider architecture | 🟢 Active |
+| Player intelligence | 🟢 Active |
+| Stats / analytics | 🟢 Active |
+| Search / guild | 🟢 Active |
+| Catalog | 🟢 Active |
+| Provider registry | 🟢 Active |
 | Cache / rate limit | 🟢 Active |
-| Frontend | 🟡 Expanding |
+| TCP diagnostics | 🟢 Active |
+| Frontend console | 🟡 Expanding |
 | Live provider coverage | 🟡 Provider-dependent |
-| Advanced history | 🟡 Planned |
-| Live leaderboards | 🟡 Provider-dependent |
-
-Jokor is an evolving platform. Features are marked according to whether they are implemented, being expanded, or require a real external provider.
-
----
-
-## 🛡️ Data & Safety Policy
-
-Jokor is intended for legitimate informational and analytical use.
-
-The project does **not** implement:
-
-- Password collection
-- Credential theft
-- Token theft
-- Authentication bypass
-- Account takeover
-- Unauthorized account binding/unbinding
-- Inventory modification
-- Other account-manipulation operations
-
-Public repositories may be used as architectural references. Code is reused only where licensing permits it, and external provider protocols are isolated behind adapters.
+| Rank/activity history | 🟣 Provider-dependent |
+| Live leaderboards | 🟣 Provider-dependent |
+| OpenAPI explorer | 🟣 Planned |
 
 ---
 
-## 🚀 Roadmap
+## <font color="#9d4edd">🗺️ ROADMAP</font>
 
-### Phase 1 — Core
+### PHASE 1 — CORE
 
-- [x] Modular backend
+- [x] Modular Flask backend
 - [x] Player service
-- [x] Statistics
+- [x] BR / CS statistics
 - [x] Search abstraction
 - [x] Guild abstraction
-- [x] Analytics
+- [x] Analytics engine
 - [x] Cache / rate limit
 - [x] Health / readiness
 
-### Phase 2 — Intelligence Expansion
+### PHASE 2 — INTELLIGENCE
 
-- [x] Catalog foundation
+- [x] Player Intelligence Scan
 - [x] Player comparison
-- [x] Service capability registry
-- [ ] Advanced player history
+- [x] Service registry
+- [x] Catalog foundation
+- [ ] Advanced history
 - [ ] Rank history
 - [ ] Trend engine
 - [ ] Advanced guild analytics
 
-### Phase 3 — Provider Expansion
+### PHASE 3 — TCP / PROVIDERS
 
+- [x] TCP transport architecture
+- [x] Safe frame inspection
+- [x] Protocol capability discovery
+- [ ] Real provider-backed protocol data
+- [ ] Emote metadata provider
 - [ ] Multiple live providers
-- [ ] Automatic provider fallback
-- [ ] Ban-status provider
-- [ ] Friends provider
-- [ ] Login-history provider
-- [ ] Wishlist provider
-- [ ] Inventory provider
-- [ ] Live leaderboard provider
+- [ ] Automatic provider fallback expansion
 
-### Phase 4 — JOKOR Console
+### PHASE 4 — JOKOR CONSOLE
 
 - [ ] Full player scanner
-- [ ] Player intelligence dashboard
+- [ ] Intelligence dashboard
 - [ ] Compare workspace
 - [ ] Guild intelligence dashboard
 - [ ] Game-data browser
@@ -366,30 +396,81 @@ Public repositories may be used as architectural references. Code is reused only
 
 ---
 
-## 🔧 Backend
+## <font color="#39ff78">💚🟣 DESIGN</font>
 
-The backend lives in `backend/` and is designed for deployment on Render.
+Jokor uses a **black + ion green + electric purple** identity:
 
-See [`backend/README.md`](backend/README.md) and [`backend/DEPLOY_RENDER.md`](backend/DEPLOY_RENDER.md) for backend details.
+```text
+ION GREEN     #39FF78
+ELECTRIC PURPLE #9D4EDD
+DEEP BLACK    #050805
+PURPLE LIGHT  #D8B4FE
+```
+
+Visual language:
+
+- 🟢 Neon green intelligence panels
+- 🟣 Purple accent systems
+- ⚡ Animated neon banner
+- 🌐 Grid / scanline atmosphere
+- 🃏 Jokor identity
+- 📡 Protocol-console styling
+- 📊 Dense analytics dashboards
+- 📱 Responsive interface
 
 ---
 
-## ⭐ Why Jokor?
+## <font color="#9d4edd">☠️ JOKOR TERMINAL</font>
 
 ```text
-NOT JUST AN API.
-
-A modular intelligence layer.
-A growing service ecosystem.
-A provider-independent architecture.
-A serious Free Fire data console.
-
-JOKOR IS BUILT TO SCALE.
+> INITIALIZING JOKOR CORE...
+> PROVIDER REGISTRY ............. ONLINE
+> PLAYER INTELLIGENCE ........... ONLINE
+> ANALYTICS ENGINE .............. ONLINE
+> TCP DIAGNOSTICS ............... ONLINE
+> CATALOG SYSTEM ................ ONLINE
+> CACHE LAYER ................... ONLINE
+> RATE LIMITER .................. ONLINE
+> HEALTH MONITOR ................ ONLINE
+>
+> STATUS: READY
+> MODE: INTELLIGENCE
+> COLOR: GREEN // PURPLE
 ```
+
+---
+
+## <font color="#39ff78">🚀 DEPLOYMENT</font>
+
+The backend is prepared for deployment on **Render** after repository verification and CI completion.
+
+```text
+GitHub
+  ↓
+Jokor backend + frontend
+  ↓
+CI verification
+  ↓
+Render
+  ↓
+Jokor API + Console
+```
+
+See:
+
+- [`backend/README.md`](backend/README.md)
+- [`backend/DEPLOY_RENDER.md`](backend/DEPLOY_RENDER.md)
+
+---
 
 <div align="center">
 
-### 🃏 JOKOR
-**ION GREEN // BLACK // INTELLIGENCE**
+<img src="assets/jokor-neon-loop.svg" alt="Jokor animated neon footer" width="90%" />
+
+# <font color="#39ff78">🃏 JOKOR</font>
+
+### <font color="#9d4edd">GREEN // PURPLE // INTELLIGENCE // TCP // API</font>
+
+<font color="#d8b4fe">Built as a modular Free Fire intelligence platform.</font>
 
 </div>
