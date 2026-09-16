@@ -49,8 +49,9 @@ def test_service_registry():
     assert response.status_code == 200
     payload = response.get_json()
     assert payload['success'] is True
-    assert payload['count'] >= 20
+    assert payload['count'] >= 24
     assert any(item['id'] == 'leaderboards' for item in payload['data'])
+    assert any(item['id'] == 'player-intelligence' for item in payload['data'])
 
 
 def test_service_filter():
@@ -67,6 +68,19 @@ def test_service_detail_and_missing_service():
     response = client().get('/api/services/not-real')
     assert response.status_code == 404
     assert response.get_json()['error']['code'] == 'SERVICE_NOT_FOUND'
+
+
+def test_player_intelligence_validation_and_safe_fallback():
+    response = client().get('/api/player/IND/not-a-uid/intelligence')
+    assert response.status_code == 400
+    assert response.get_json()['error'] == 'INVALID_REQUEST'
+
+    response = client().get('/api/player/IND/123456789/intelligence')
+    assert response.status_code == 200
+    payload = response.get_json()
+    assert payload['success'] is False
+    assert payload['data']['profile_completeness'] == 0
+    assert payload['data']['available_sections'] == []
 
 
 def test_invalid_uid():
