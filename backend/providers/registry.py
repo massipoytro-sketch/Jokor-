@@ -13,6 +13,10 @@ class ProviderRegistry:
     def __init__(self, providers: list[PublicDataProvider] | None = None):
         self._providers = list(providers or [])
 
+    @property
+    def providers(self) -> list[PublicDataProvider]:
+        return list(self._providers)
+
     def register(self, provider: PublicDataProvider) -> None:
         if provider not in self._providers:
             self._providers.append(provider)
@@ -31,6 +35,6 @@ class ProviderRegistry:
                 if result is not None:
                     return result, str(getattr(provider, "name", "unknown"))
                 errors.append(f"{getattr(provider, 'name', 'unknown')}: empty result")
-            except (NotImplementedError, TimeoutError, ConnectionError, ValueError) as exc:
+            except (NotImplementedError, TimeoutError, ConnectionError, ValueError, RuntimeError) as exc:
                 errors.append(f"{getattr(provider, 'name', 'unknown')}: {type(exc).__name__}")
         raise ProviderUnavailable("No configured provider returned data" + (f" ({'; '.join(errors)})" if errors else ""))
