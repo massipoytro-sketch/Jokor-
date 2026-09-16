@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="320" viewBox="0 0 1200 320">
+  <defs>
+    <linearGradient id="g" x1="0" x2="1">
+      <stop offset="0" stop-color="#39ff78"/><stop offset="0.5" stop-color="#9d4edd"/><stop offset="1" stop-color="#39ff78"/>
+      <animate attributeName="x1" values="0;1;0" dur="4s" repeatCount="indefinite"/>
+    </linearGradient>
+    <filter id="glow"><feGaussianBlur stdDeviation="6" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <pattern id="grid" width="32" height="32" patternUnits="userSpaceOnUse"><path d="M32 0H0V32" fill="none" stroke="#39ff78" stroke-opacity=".10"/></pattern>
+  </defs>
+  <rect width="1200" height="320" rx="28" fill="#050805"/>
+  <rect width="1200" height="320" rx="28" fill="url(#grid)"/>
+  <circle cx="600" cy="160" r="105" fill="none" stroke="url(#g)" stroke-width="3" opacity=".75" filter="url(#glow)">
+    <animate attributeName="r" values="92;118;92" dur="2.8s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values=".35;.9;.35" dur="2.8s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="600" cy="160" r="145" fill="none" stroke="#9d4edd" stroke-opacity=".25" stroke-width="2">
+    <animateTransform attributeName="transform" type="rotate" from="0 600 160" to="360 600 160" dur="10s" repeatCount="indefinite"/>
+  </circle>
+  <text x="600" y="145" text-anchor="middle" font-family="monospace" font-size="58" font-weight="900" fill="url(#g)" filter="url(#glow)">JOKOR</text>
+  <text x="600" y="190" text-anchor="middle" font-family="monospace" font-size="18" letter-spacing="6" fill="#d8b4fe">PLAYER INTELLIGENCE // TCP // API // ANALYTICS</text>
+  <path d="M120 250H1080" stroke="url(#g)" stroke-width="3" filter="url(#glow)">
+    <animate attributeName="stroke-dasharray" values="10 30;30 10;10 30" dur="2s" repeatCount="indefinite"/>
+  </path>
+</svg>
