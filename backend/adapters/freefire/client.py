@@ -1,13 +1,19 @@
 class FreeFireClient:
-    """Boundary for Jokor's Free Fire data source.
+    """Safe boundary for public/informational Free Fire data.
 
-    This layer deliberately contains no account credentials, token capture,
-    account modification, or authentication-bypass logic. Only public,
-    informational player data should be normalized here.
+    Provider-specific protocol work stays behind this class. No credentials,
+    token capture, account modification, or authentication-bypass operations
+    belong in Jokor.
     """
 
     def get_profile(self, region: str, uid: str) -> dict:
-        raise NotImplementedError(
-            "Free Fire public-data adapter is not configured yet. "
-            "Complete source/protobuf compatibility testing before enabling it."
-        )
+        raise NotImplementedError("Public profile provider is not configured yet.")
+
+    def get_stats(self, region: str, uid: str, mode: str) -> dict:
+        raise NotImplementedError("Public statistics provider is not configured yet.")
+
+    def search(self, region: str, keyword: str) -> list:
+        raise NotImplementedError("Public search provider is not configured yet.")
+
+    def get_guild(self, region: str, guild_id: str) -> dict:
+        raise NotImplementedError("Public guild provider is not configured yet.")
