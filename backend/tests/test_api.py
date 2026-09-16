@@ -36,6 +36,39 @@ def test_game_info():
     assert len(payload['ranks']) >= 8
 
 
+def test_catalog():
+    response = client().get('/api/catalog')
+    assert response.status_code == 200
+    payload = response.get_json()['data']
+    assert len(payload['regions']) >= 6
+    assert {mode['id'] for mode in payload['modes']} == {'br', 'cs'}
+
+
+def test_service_registry():
+    response = client().get('/api/services')
+    assert response.status_code == 200
+    payload = response.get_json()
+    assert payload['success'] is True
+    assert payload['count'] >= 20
+    assert any(item['id'] == 'leaderboards' for item in payload['data'])
+
+
+def test_service_filter():
+    response = client().get('/api/services?status=provider-dependent')
+    assert response.status_code == 200
+    assert all(item['status'] == 'provider-dependent' for item in response.get_json()['data'])
+
+
+def test_service_detail_and_missing_service():
+    response = client().get('/api/services/player-profile')
+    assert response.status_code == 200
+    assert response.get_json()['data']['group'] == 'player'
+
+    response = client().get('/api/services/not-real')
+    assert response.status_code == 404
+    assert response.get_json()['error']['code'] == 'SERVICE_NOT_FOUND'
+
+
 def test_invalid_uid():
     response = client().get('/api/player/IND/not-a-uid')
     assert response.status_code == 400
