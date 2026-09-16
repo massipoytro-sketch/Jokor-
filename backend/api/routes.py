@@ -40,11 +40,13 @@ def meta():
     return jsonify({
         "success": True,
         "name": "Jokor API",
-        "version": "1.1.0",
+        "version": "2.0.0",
         "request_id": get_request_id(),
         "features": [
             "player", "stats", "search", "guild", "assets", "analytics",
-            "derived_stats", "game_info", "region_directory", "health",
+            "derived_stats", "game_info", "region_directory", "catalog",
+            "weapons", "characters", "pets", "cosmetics", "vehicles",
+            "seasons", "capabilities", "health", "ready", "metrics",
         ],
     })
 
@@ -61,10 +63,7 @@ def ready():
 
 @api.get("/regions")
 def regions():
-    entries = [
-        {"code": code, "group": region_group(code)}
-        for code in sorted(SUPPORTED_REGIONS)
-    ]
+    entries = [{"code": code, "group": region_group(code)} for code in sorted(SUPPORTED_REGIONS)]
     return jsonify({"success": True, "regions": entries, "count": len(entries)})
 
 
