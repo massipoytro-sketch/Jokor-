@@ -7,7 +7,7 @@ from core.errors import register_error_handlers
 from core.health import health_snapshot
 from core.metrics import metrics
 from core.rate_limit import RateLimiter
-from core.request_id import request_id_middleware
+from core.request_id import get_request_id, request_id_middleware
 
 
 def create_app() -> Flask:
@@ -29,7 +29,7 @@ def create_app() -> Flask:
                 "success": False,
                 "error": "RATE_LIMITED",
                 "message": "Too many requests. Try again later.",
-                "request_id": getattr(request, "request_id", None),
+                "request_id": get_request_id(),
             })
             response.status_code = 429
             response.headers["Retry-After"] = str(retry_after)
