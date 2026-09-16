@@ -52,10 +52,12 @@ class IntelligenceService:
         metrics = {"br": self._section_metrics(br), "cs": self._section_metrics(cs)}
         insights: list[str] = []
         for mode, values in metrics.items():
-            if values["headshot_rate"] is not None:
-                insights.append(f"{mode.upper()} headshot rate is {values['headshot_rate']:.1f}%.")
-            if values["win_rate"] is not None:
-                insights.append(f"{mode.upper()} win rate is {values['win_rate']:.1f}%.")
+            headshot_rate = values.get("headshot_rate")
+            win_rate = values.get("win_rate")
+            if headshot_rate is not None:
+                insights.append(f"{mode.upper()} headshot rate is {headshot_rate:.1f}%.")
+            if win_rate is not None:
+                insights.append(f"{mode.upper()} win rate is {win_rate:.1f}%.")
         return {
             "success": bool(available),
             "data": {
