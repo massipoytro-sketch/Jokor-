@@ -3,6 +3,7 @@ from flask import Blueprint, jsonify, request
 from core.request_id import get_request_id
 from services.account_links_service import diagnostic_schema, supported_link_types
 from services.catalog_service import categories, modes, ranks, regions, seasons, status
+from services.protocol_service import inspect_frame, protocol_capabilities
 from services.service_registry import all_services, get_service
 
 extended = Blueprint("extended", __name__)
@@ -120,6 +121,25 @@ def account_links(region, uid):
     return ok(diagnostic_schema(uid, region.upper()))
 
 
+@extended.get("/protocol/tcp/capabilities")
+def tcp_capabilities():
+    return ok(protocol_capabilities())
+
+
+@extended.post("/protocol/tcp/inspect")
+def tcp_inspect():
+    body = request.get_json(silent=True) or {}
+    try:
+        result = inspect_frame(body.get("payload", ""), width=int(body.get("width", 4)))
+    except (TypeError, ValueError) as exc:
+        return jsonify({
+            "success": False,
+            "error": {"code": "INVALID_PROTOCOL_PAYLOAD", "message": str(exc)},
+            "request_id": get_request_id(),
+        }), 400
+    return ok(result)
+
+
 @extended.get("/capabilities")
 def capabilities():
     return ok({
@@ -130,6 +150,7 @@ def capabilities():
         "competitive": ["leaderboards"],
         "social": ["friends", "dynamic_duo"],
         "account_intelligence": ["ban_status", "inventory", "wishlist", "wallet", "account_links"],
+        "protocol": ["tcp_probe", "tcp_capabilities", "tcp_frame_inspection"],
         "infrastructure": ["health", "ready", "metrics", "request_id", "rate_limit", "cache", "service_registry"],
         "provider_dependent": ["ban_status", "friends", "login_history", "wishlist", "wallet", "dynamic_duo", "live_leaderboards", "inventory", "account_links"],
     })
