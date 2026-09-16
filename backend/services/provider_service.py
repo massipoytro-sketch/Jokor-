@@ -14,7 +14,7 @@ class FreeFireClientProvider:
         return normalize_profile(self.client.get_profile(region, uid), region, uid)
 
     def get_stats(self, region: str, uid: str, mode: str) -> dict:
-        return normalize_stats(self.client.get_stats(region, uid, mode))
+        return normalize_stats(self.client.get_stats(region, uid, mode), mode)
 
     def detect_profile(self, uid: str) -> tuple[str, dict]:
         region, payload = self.client.detect_profile(uid)
