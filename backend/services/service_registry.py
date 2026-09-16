@@ -1,12 +1,14 @@
 """Canonical service registry for Jokor.
 
-The registry is descriptive: a service is marked live only when a configured
-provider can actually supply the requested data.
+A service is marked live only when the configured provider can actually supply
+that data. Provider-dependent entries remain explicit so the API never fakes
+upstream capabilities.
 """
 
 SERVICES = [
     {"id": "player-profile", "name": "Player Profile", "group": "player", "status": "live"},
     {"id": "player-stats", "name": "Player Statistics", "group": "player", "status": "live"},
+    {"id": "player-intelligence", "name": "Player Intelligence Scan", "group": "analytics", "status": "live"},
     {"id": "player-compare", "name": "Player Comparison", "group": "analytics", "status": "live"},
     {"id": "player-search", "name": "Player Search", "group": "search", "status": "live"},
     {"id": "guild", "name": "Guild Intelligence", "group": "guild", "status": "live"},
@@ -26,6 +28,7 @@ SERVICES = [
     {"id": "wishlist", "name": "Wishlist", "group": "player", "status": "provider-dependent"},
     {"id": "wallet", "name": "Wallet Info", "group": "player", "status": "provider-dependent"},
     {"id": "dynamic-duo", "name": "Dynamic Duo", "group": "social", "status": "provider-dependent"},
+    {"id": "account-links", "name": "Account Link Intelligence", "group": "account", "status": "provider-dependent"},
     {"id": "api-docs", "name": "OpenAPI Schema", "group": "infrastructure", "status": "planned"},
 ]
 
