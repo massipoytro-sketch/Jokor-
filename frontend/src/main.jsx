@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
+import { createRoot } from 'react-dom/client';
 import { Activity, BarChart3, ChevronRight, Crown, Crosshair, Database, Gauge, Globe2, Search, Shield, Swords, Users, Zap } from 'lucide-react';
 import { endpoints, apiBase } from './api';
 import './style.css';
@@ -26,4 +27,5 @@ function SystemView({system}){return <section className="tool-panel"><div classN
 function Info({icon,label,value}){return <div className="info">{icon}<small>{label}</small><strong>{value}</strong></div>}
 function Stat({icon,name,value}){return <div className="stat">{icon}<small>{name}</small><strong>{value}</strong></div>}
 function Card({icon,title,text}){return <article><div className="card-icon">{icon}</div><h3>{title}</h3><p>{text}</p><span className="arrow">↗</span></article>}
+
 createRoot(document.getElementById('root')).render(<App/>);
