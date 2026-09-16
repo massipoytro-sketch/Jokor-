@@ -8,6 +8,7 @@ from services.guild_service import GuildService
 from services.player_service import PlayerService
 from services.search_service import SearchService
 from services.stats_service import StatsService
+from services.statistics import derive_metrics
 
 api = Blueprint("api", __name__)
 player_service = PlayerService()
@@ -40,7 +41,7 @@ def meta():
         "name": "Jokor API",
         "version": "1.0.0",
         "request_id": get_request_id(),
-        "features": ["player", "stats", "search", "guild", "assets", "analytics", "health"],
+        "features": ["player", "stats", "search", "guild", "assets", "analytics", "derived_stats", "health"],
     })
 
 
@@ -57,6 +58,30 @@ def ready():
 @api.get("/regions")
 def regions():
     return jsonify({"success": True, "regions": sorted(SUPPORTED_REGIONS), "count": len(SUPPORTED_REGIONS)})
+
+
+@api.post("/tools/derive-stats")
+def derive_stats():
+    """Calculate rates from counters supplied by a trusted data source or user."""
+    body = request.get_json(silent=True)
+    if not isinstance(body, dict):
+        return error("Request body must be a JSON object", "INVALID_BODY")
+    stats = body.get("stats")
+    if not isinstance(stats, dict):
+        return error("'stats' must be a JSON object", "INVALID_STATS")
+    allowed = {"matches", "wins", "kills", "deaths", "headshots"}
+    unknown = sorted(set(stats) - allowed)
+    if unknown:
+        return error("Unsupported statistic fields", "UNKNOWN_STATS", details={"fields": unknown})
+    for key, value in stats.items():
+        if isinstance(value, bool) or not isinstance(value, (int, float)) or value < 0:
+            return error(f"'{key}' must be a non-negative number", "INVALID_STAT_VALUE")
+    return jsonify({
+        "success": True,
+        "metrics": derive_metrics(stats),
+        "request_id": get_request_id(),
+        "source": "provided_counters",
+    })
 
 
 @api.get("/player/<region>/<uid>")
@@ -76,6 +101,8 @@ def player_stats(region, uid):
     if not validate_region(region) or not validate_uid(uid):
         return error("Invalid region or UID", "INVALID_REQUEST")
     mode = request.args.get("mode", "br").lower()
+    if mode not in {"br", "cs"}:
+        return error("Mode must be 'br' or 'cs'", "INVALID_MODE")
     return jsonify(stats_service.get_stats(region, uid, mode))
 
 
