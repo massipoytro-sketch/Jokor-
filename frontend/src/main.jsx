@@ -1,31 +1,136 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useState } from 'react';
+import { Activity, BarChart3, ChevronRight, Crown, Crosshair, Database, Gauge, Search, Shield, Swords, Users, Zap } from 'lucide-react';
 import { createRoot } from 'react-dom/client';
-import { Activity, BarChart3, ChevronRight, Crown, Crosshair, Database, Gauge, Globe2, Search, Shield, Swords, Users, Zap } from 'lucide-react';
 import { endpoints, apiBase } from './api';
 import './style.css';
 
-const REGIONS = ['ME', 'IND', 'BR', 'SG', 'EU', 'US'];
 function App() {
-  const [view,setView]=useState('scan'),[region,setRegion]=useState('ME'),[uid,setUid]=useState(''),[otherUid,setOtherUid]=useState(''),[keyword,setKeyword]=useState(''),[guildId,setGuildId]=useState('');
-  const [player,setPlayer]=useState(null),[stats,setStats]=useState(null),[compare,setCompare]=useState(null),[searchResults,setSearchResults]=useState(null),[guild,setGuild]=useState(null),[gameInfo,setGameInfo]=useState(null),[system,setSystem]=useState(null),[mode,setMode]=useState('br'),[loading,setLoading]=useState(false),[error,setError]=useState('');
-  const reset=()=>{setError('');setStats(null);setCompare(null);setSearchResults(null);setGuild(null)};
-  async function scan(e){e?.preventDefault();if(!/^\d{5,15}$/.test(uid.trim())){setError('أدخل UID رقمي من 5 إلى 15 رقمًا');return}setLoading(true);reset();try{const profile=await endpoints.player(region,uid.trim());setPlayer(profile.data);const s=await endpoints.stats(region,uid.trim(),mode);setStats(s.data)}catch(x){setPlayer(null);setError(x.message)}finally{setLoading(false)}}
-  async function loadCompare(e){e?.preventDefault();if(!/^\d{5,15}$/.test(uid.trim())||!/^\d{5,15}$/.test(otherUid.trim())){setError('أدخل UIDين صحيحين للمقارنة');return}setLoading(true);setError('');try{const r=await endpoints.compare(region,uid.trim(),otherUid.trim());setCompare(r.data??r);setView('compare')}catch(x){setCompare(null);setError(x.message)}finally{setLoading(false)}}
-  async function runSearch(e){e?.preventDefault();if(keyword.trim().length<2){setError('اكتب اسمًا من حرفين على الأقل');return}setLoading(true);setError('');try{const r=await endpoints.search(region,keyword.trim());setSearchResults(r.data??r)}catch(x){setSearchResults(null);setError(x.message)}finally{setLoading(false)}}
-  async function runGuild(e){e?.preventDefault();if(!guildId.trim()){setError('أدخل Guild ID');return}setLoading(true);setError('');try{const r=await endpoints.guild(region,guildId.trim());setGuild(r.data??r)}catch(x){setGuild(null);setError(x.message)}finally{setLoading(false)}}
-  useEffect(()=>{if(!player||!uid)return;let cancelled=false;setLoading(true);endpoints.stats(region,uid.trim(),mode).then(r=>{if(!cancelled)setStats(r.data)}).catch(x=>{if(!cancelled)setError(x.message)}).finally(()=>{if(!cancelled)setLoading(false)});return()=>{cancelled=true}},[mode]);
-  useEffect(()=>{if(view==='system')Promise.allSettled([endpoints.health(),endpoints.meta()]).then(([h,m])=>setSystem({health:h.status==='fulfilled'?h.value:null,meta:m.status==='fulfilled'?m.value:null}));if(view==='game')endpoints.gameInfo().then(r=>setGameInfo(r.data??r)).catch(x=>setError(x.message))},[view]);
-  const fields=useMemo(()=>player?[['LEVEL',player.level],['LIKES',player.likes],['RANK',player.rank],['RANK POINTS',player.rank_points],['K/D',stats?.derived?.kd_ratio??player.kd_ratio],['WIN RATE',stats?.derived?.win_rate_pct!=null?`${stats.derived.win_rate_pct}%`:player.win_rate_pct!=null?`${player.win_rate_pct}%`:null],['HEADSHOT',stats?.derived?.headshot_rate_pct!=null?`${stats.derived.headshot_rate_pct}%`:player.headshot_rate_pct!=null?`${player.headshot_rate_pct}%`:null],['MATCHES',stats?.matches]]:[],[player,stats]);
-  const nav=[['scan','PLAYER SCAN'],['search','SEARCH'],['compare','COMPARE'],['guild','GUILD'],['game','GAME DATA'],['system','SYSTEM']];
-  return <div className="app"><div className="noise"/><header><button className="brand" onClick={()=>setView('scan')} aria-label="Jokor home"><div className="logo">J</div><div><b>JOKOR</b><span>FREE FIRE INTELLIGENCE</span></div></button><nav>{nav.map(([id,label])=><button key={id} className={view===id?'active':''} onClick={()=>{setView(id);setError('')}}>{label}</button>)}</nav><div className="status"><i/> SYSTEM ONLINE</div></header><main><section className="hero compact"><div className="hero-copy"><div className="eyebrow"><Zap size={15}/> NEXT-GEN PLAYER INTELLIGENCE</div><h1>KNOW THE<br/><em>PLAYER.</em></h1><p>محرك Jokor لتنظيم معلومات لاعبي Free Fire، تحليل الإحصائيات، البحث والمقارنة في واجهة واحدة.</p>{view==='scan'&&<form onSubmit={scan} className="search"><select value={region} onChange={e=>setRegion(e.target.value)}>{REGIONS.map(r=><option key={r}>{r}</option>)}</select><input value={uid} onChange={e=>setUid(e.target.value.replace(/\D/g,''))} inputMode="numeric" placeholder="ENTER PLAYER UID"/><button type="submit">{loading?<Activity className="spin"/>:<Search/>}<span>SCAN PLAYER</span></button></form>}</div><div className="orb"><div className="ring r1"/><div className="ring r2"/><div className="ring r3"/><div className="core">J</div><div className="scanline"/></div></section>{error&&<div className="error global-error">{error}</div>}{view==='scan'&&<ScanView player={player} fields={fields} stats={stats} uid={uid} region={region} otherUid={otherUid} setOtherUid={setOtherUid} onCompare={loadCompare} mode={mode} setMode={setMode} loading={loading}/>} {view==='search'&&<ToolPanel title="PLAYER SEARCH" subtitle="SEARCH BY NICKNAME / NAME"><form className="tool-form" onSubmit={runSearch}><input value={keyword} onChange={e=>setKeyword(e.target.value)} placeholder="PLAYER NAME"/><button>SEARCH</button></form><DataList data={searchResults} empty="لا توجد نتائج حتى الآن."/></ToolPanel>} {view==='compare'&&<ToolPanel title="PLAYER COMPARISON" subtitle="COMPARE TWO UID TARGETS"><form className="tool-form compare-form" onSubmit={loadCompare}><input value={uid} onChange={e=>setUid(e.target.value.replace(/\D/g,''))} placeholder="UID A"/><input value={otherUid} onChange={e=>setOtherUid(e.target.value.replace(/\D/g,''))} placeholder="UID B"/><button>COMPARE</button></form><DataObject data={compare}/></ToolPanel>} {view==='guild'&&<ToolPanel title="GUILD INTEL" subtitle="GUILD PROFILE LOOKUP"><form className="tool-form" onSubmit={runGuild}><input value={guildId} onChange={e=>setGuildId(e.target.value)} placeholder="GUILD ID"/><button>SCAN GUILD</button></form><DataObject data={guild}/></ToolPanel>} {view==='game'&&<ToolPanel title="GAME DATA" subtitle="MODES · RANKS · FIELD CATALOG"><DataObject data={gameInfo}/></ToolPanel>} {view==='system'&&<SystemView system={system}/>}<section className="features"><div className="section-label">JOKOR CORE</div><h2>BUILT TO <span>HUNT DATA.</span></h2><div className="grid"><Card icon={<Crosshair/>} title="PLAYER SCAN" text="هوية اللاعب، المستوى، الرتبة والإعجابات والبيانات المتاحة من المصدر."/><Card icon={<BarChart3/>} title="DEEP STATS" text="Win Rate و K/D و Headshot Rate ومؤشرات مشتقة قابلة للتحليل."/><Card icon={<Swords/>} title="BR / CS" text="فصل إحصائيات Battle Royale و Clash Squad عند توفرها."/><Card icon={<Shield/>} title="SMART FALLBACK" text="طبقة مزودين مع cache وhealth checks للحفاظ على استقرار النظام."/></div></section><section className="terminal"><div><span className="dot"/> JOKOR API // {apiBase()}</div><code>PLAYER_INTELLIGENCE // READY<br/><b>STATUS:</b> {loading?'PROCESSING TARGET':'AWAITING TARGET'}<br/><b>ENGINE:</b> PROVIDER HUB + ANALYTICS<br/><b>REGION:</b> {region}</code></section></main><footer><b>JOKOR</b><span>PLAYER INTELLIGENCE SYSTEM · 2026</span><a href="https://github.com/massipoytro-sketch/Jokor-" target="_blank" rel="noreferrer">⌁ SOURCE</a></footer></div>;
+  const [view, setView] = useState('scan');
+  const [uid, setUid] = useState('');
+  const [otherUid, setOtherUid] = useState('');
+  const [guildId, setGuildId] = useState('');
+  const [player, setPlayer] = useState(null);
+  const [stats, setStats] = useState({ br: null, cs: null });
+  const [compare, setCompare] = useState(null);
+  const [guild, setGuild] = useState(null);
+  const [system, setSystem] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [status, setStatus] = useState('idle');
+  const [error, setError] = useState('');
+
+  const validUid = value => /^\d{5,15}$/.test(value.trim());
+  const clear = () => { setError(''); setStatus('idle'); };
+
+  async function scan(e) {
+    e?.preventDefault();
+    const target = uid.trim();
+    if (!validUid(target)) { setError('أدخل UID صحيحًا من 5 إلى 15 رقمًا.'); return; }
+    setLoading(true); setError(''); setStatus('detecting'); setPlayer(null); setStats({ br: null, cs: null });
+    try {
+      const profile = await endpoints.playerAuto(target);
+      setPlayer(profile.data);
+      setStatus('loading');
+      const region = profile.metadata.region;
+      const [br, cs] = await Promise.allSettled([
+        endpoints.stats(region, target, 'br'),
+        endpoints.stats(region, target, 'cs')
+      ]);
+      setStats({ br: br.status === 'fulfilled' ? br.value.data : null, cs: cs.status === 'fulfilled' ? cs.value.data : null });
+      setStatus('ready');
+      if (!br.value && !cs.value) setError('تم العثور على اللاعب، لكن الإحصائيات غير متاحة حاليًا.');
+    } catch (x) {
+      setPlayer(null); setStats({ br: null, cs: null }); setStatus('error');
+      setError(x.message || 'تعذر جلب بيانات اللاعب.');
+    } finally { setLoading(false); }
+  }
+
+  async function doCompare(e) {
+    e?.preventDefault();
+    if (!validUid(uid) || !validUid(otherUid)) { setError('أدخل UIDين صحيحين للمقارنة.'); return; }
+    setLoading(true); setError('');
+    try {
+      const [a, b] = await Promise.all([endpoints.playerAuto(uid.trim()), endpoints.playerAuto(otherUid.trim())]);
+      if (a.metadata.region !== b.metadata.region) throw new Error('اللاعبان على منطقتين مختلفتين؛ المقارنة المباشرة غير متاحة من هذا المصدر.');
+      const result = await endpoints.compare(a.metadata.region, uid.trim(), otherUid.trim());
+      setCompare(result.data ?? result); setView('compare');
+    } catch (x) { setCompare(null); setError(x.message || 'تعذر إنشاء المقارنة.'); }
+    finally { setLoading(false); }
+  }
+
+  async function doGuild(e) {
+    e?.preventDefault();
+    if (!/^[0-9]+$/.test(guildId.trim())) { setError('أدخل Guild ID رقميًا.'); return; }
+    setLoading(true); setError(''); setGuild(null);
+    try {
+      if (!player?.region) throw new Error('افحص لاعبًا أولًا حتى يحدد Jokor المنطقة تلقائيًا.');
+      const result = await endpoints.guild(player.region, guildId.trim());
+      setGuild(result.data ?? result);
+    } catch (x) { setError(x.message || 'تعذر جلب بيانات النقابة.'); }
+    finally { setLoading(false); }
+  }
+
+  async function loadSystem() {
+    setView('system'); setError(''); setSystem(null);
+    const [health, meta] = await Promise.allSettled([endpoints.health(), endpoints.meta()]);
+    setSystem({ health: health.status === 'fulfilled' ? health.value : null, meta: meta.status === 'fulfilled' ? meta.value : null });
+  }
+
+  const br = stats.br;
+  const cs = stats.cs;
+  const metrics = [
+    ['LEVEL', player?.level], ['LIKES', player?.likes], ['BR RANK', br?.rank ?? player?.rank], ['BR POINTS', br?.ranking_points ?? br?.rankingPoints ?? player?.rank_points],
+    ['BR K/D', br?.derived?.kd_ratio ?? br?.kd], ['BR WIN RATE', br?.derived?.win_rate_pct != null ? `${br.derived.win_rate_pct}%` : null],
+    ['CS RANK', cs?.rank ?? cs?.cs_rank], ['CS K/D', cs?.derived?.kd_ratio ?? cs?.kd]
+  ];
+
+  return <div className="app">
+    <div className="grid-bg" />
+    <header className="topbar">
+      <button className="brand" onClick={() => { setView('scan'); clear(); }}><span className="brand-mark">J</span><span><b>JOKOR</b><small>PLAYER INTELLIGENCE</small></span></button>
+      <nav>{[['scan','SCAN'],['compare','COMPARE'],['guild','GUILD']].map(([id,label]) => <button key={id} className={view===id?'active':''} onClick={() => { setView(id); clear(); }}>{label}</button>)}</nav>
+      <button className="system-link" onClick={loadSystem}><span className="pulse"/> SYSTEM</button>
+    </header>
+
+    <main>
+      <section className="hero">
+        <div className="hero-copy">
+          <div className="eyebrow"><Zap size={14}/> AUTOMATIC PLAYER INTELLIGENCE</div>
+          <h1>ENTER UID.<br/><em>WE DO THE REST.</em></h1>
+          <p>اكتب UID فقط. Jokor يكتشف المنطقة تلقائيًا ويجمع المعلومات المتاحة من مصدر البيانات، بدون اختيار سيرفر وبدون بيانات وهمية.</p>
+          <form className="uid-search" onSubmit={scan}>
+            <div className="uid-input"><Search size={19}/><input value={uid} onChange={e=>setUid(e.target.value.replace(/\D/g,''))} inputMode="numeric" autoComplete="off" placeholder="PLAYER UID"/></div>
+            <button disabled={loading}>{loading ? <Activity className="spin"/> : <Crosshair/>}<span>{status==='detecting'?'DETECTING…':'SCAN PLAYER'}</span></button>
+          </form>
+          <div className="trust"><span>●</span> NO PASSWORDS <span>●</span> PUBLIC DATA ONLY <span>●</span> LIVE SOURCE</div>
+        </div>
+        <div className="hero-visual" aria-hidden="true"><div className="halo h1"/><div className="halo h2"/><div className="halo h3"/><div className="core">J</div><div className="crosshair"><i/><i/></div></div>
+      </section>
+
+      {error && <div className="error"><Shield size={18}/><span>{error}</span></div>}
+
+      {view==='scan' && <section className="result-area">
+        {player ? <>
+          <div className="player-head"><div className="avatar">{String(player.nickname || 'J')[0]}</div><div className="identity"><span className="label">PLAYER DETECTED · {player.region}</span><h2>{player.nickname || 'Unknown player'}</h2><p>UID {player.uid || uid}</p></div><div className="source"><span>DATA SOURCE</span><b>LIVE</b></div></div>
+          <div className="stats-grid">{metrics.map(([label,value],i)=><div className="metric" key={label}>{[<Gauge/>,<Users/>,<Crown/>,<Zap/>,<Swords/>,<BarChart3/>,<Crown/>,<Crosshair/>][i]}<span>{label}</span><strong>{value ?? '—'}</strong></div>)}</div>
+          <div className="detail-row"><div><span className="section-kicker">PROFILE</span><div className="profile-line"><b>LEVEL</b><span>{player.level ?? '—'}</span><b>LIKES</b><span>{player.likes ?? '—'}</span><b>GUILD</b><span>{player.guild_name || player.guild_id || '—'}</span></div></div><div className="availability"><span className="live-dot"/> DATA AVAILABLE</div></div>
+        </> : <div className="empty-state"><div className="empty-icon"><Crosshair/></div><h2>READY TO SCAN</h2><p>أدخل UID في الأعلى. لا تحتاج إلى معرفة السيرفر أو نوع البيانات.</p></div>}
+      </section>}
+
+      {view==='compare' && <section className="panel"><div className="section-kicker">INTELLIGENCE TOOL</div><h2>COMPARE PLAYERS</h2><form className="tool-form" onSubmit={doCompare}><input value={uid} onChange={e=>setUid(e.target.value.replace(/\D/g,''))} inputMode="numeric" placeholder="FIRST UID"/><div className="vs">VS</div><input value={otherUid} onChange={e=>setOtherUid(e.target.value.replace(/\D/g,''))} inputMode="numeric" placeholder="SECOND UID"/><button disabled={loading}>{loading?'…':'COMPARE'}</button></form>{compare?<pre className="json">{JSON.stringify(compare,null,2)}</pre>:<Empty text="أدخل UIDين ثم ابدأ المقارنة."/>}</section>}
+
+      {view==='guild' && <section className="panel"><div className="section-kicker">INTELLIGENCE TOOL</div><h2>GUILD LOOKUP</h2><p className="hint">يستخدم Jokor المنطقة التي اكتشفها من آخر لاعب تم فحصه.</p><form className="tool-form" onSubmit={doGuild}><input value={guildId} onChange={e=>setGuildId(e.target.value.replace(/\D/g,''))} inputMode="numeric" placeholder="GUILD ID"/><button disabled={loading}>{loading?'…':'SCAN GUILD'}</button></form>{guild?<pre className="json">{JSON.stringify(guild,null,2)}</pre>:<Empty text="لا توجد بيانات Guild محملة."/>}</section>}
+
+      {view==='system' && <section className="panel"><div className="section-kicker">JOKOR TELEMETRY</div><h2>SYSTEM STATUS</h2><div className="system-cards"><Info icon={<Activity/>} label="API" value={system?.health?'ONLINE':'CHECKING'}/><Info icon={<Database/>} label="SOURCE" value="PUBLIC"/><Info icon={<Shield/>} label="SAFETY" value="NO CREDENTIALS"/></div>{system&&<pre className="json">{JSON.stringify(system,null,2)}</pre>}</section>}
+
+      <section className="features"><div className="section-kicker">BUILT FOR SPEED</div><div className="feature-grid"><Feature icon={<Crosshair/>} title="UID FIRST" text="واجهة واحدة وبسيطة: UID فقط، والباقي يتكفل به Jokor."/><Feature icon={<Globe2Fallback/>} title="AUTO REGION" text="اكتشاف المنطقة من مصدر البيانات بدل إجبار المستخدم على اختيارها."/><Feature icon={<BarChart3/>} title="REAL DATA" text="لا نعرض أرقامًا تجريبية. عند غياب المصدر نخبرك بوضوح."/><Feature icon={<Shield/>} title="SAFE BY DESIGN" text="لا كلمات مرور، لا access tokens، ولا أدوات لتعديل الحساب."/></div></section>
+    </main>
+    <footer><b>JOKOR</b><span>PLAYER INTELLIGENCE · {new Date().getFullYear()}</span><code>{apiBase()}</code></footer>
+  </div>;
 }
-function ScanView({player,fields,stats,uid,region,otherUid,setOtherUid,onCompare,mode,setMode,loading}){return <section className="workspace"><div className="section-label">PLAYER DETECTION / {region}</div>{player?<><div className="profile"><div className="avatar">{String(player.nickname||'J')[0]}</div><div><h2>{player.nickname||'UNKNOWN PLAYER'}</h2><small>UID {player.uid||uid} · REGION {player.region||region}</small></div><div className="rank"><Crown size={17}/>{player.rank||'UNRANKED'}</div></div><div className="modebar"><span>MODE</span>{['br','cs'].map(m=><button type="button" key={m} className={mode===m?'active':''} onClick={()=>setMode(m)}>{m.toUpperCase()}</button>)}<span className="provider">{stats?.provider||stats?.metadata?.provider||'DATA SOURCE'}</span></div><div className="stats">{fields.map(([name,value],i)=><Stat key={name} icon={[<Gauge/>,<Users/>,<Crown/>,<Zap/>,<Swords/>,<BarChart3/>,<Crosshair/>,<Activity/>][i]} name={name} value={value??'—'}/>)}</div><form className="compare-inline" onSubmit={onCompare}><span>COMPARE TARGET</span><input value={otherUid} onChange={e=>setOtherUid(e.target.value.replace(/\D/g,''))} placeholder="SECOND UID"/><button disabled={loading}><ChevronRight size={16}/> COMPARE</button></form></>:<div className="empty"><Crosshair size={30}/><strong>NO TARGET LOCKED</strong><span>أدخل UID أعلاه لبدء الفحص.</span></div>}</section>}
-function ToolPanel({title,subtitle,children}){return <section className="tool-panel"><div className="section-label">{subtitle}</div><h2>{title}</h2>{children}</section>}
-function DataList({data,empty}){const items=Array.isArray(data)?data:data?.results||data?.players||data?.items;return items?.length?<div className="data-list">{items.map((item,i)=><div className="data-row" key={i}><strong>{item.nickname||item.name||item.uid||`RESULT ${i+1}`}</strong><span>{item.uid?`UID ${item.uid}`:JSON.stringify(item)}</span></div>)}</div>:<div className="empty"><Database size={28}/><span>{empty}</span></div>}
-function DataObject({data}){return data?<pre className="json">{JSON.stringify(data,null,2)}</pre>:<div className="empty"><Database size={28}/><span>بانتظار البيانات من الـAPI.</span></div>}
-function SystemView({system}){return <section className="tool-panel"><div className="section-label">SYSTEM TELEMETRY</div><h2>JOKOR STATUS</h2><div className="system-grid"><Info icon={<Activity/>} label="API" value={system?.health?'RESPONDING':'WAITING'}/><Info icon={<Globe2/>} label="REGION ENGINE" value="ACTIVE"/><Info icon={<Database/>} label="CACHE" value="ENABLED"/><Info icon={<Shield/>} label="VALIDATION" value="ENABLED"/></div><DataObject data={system}/></section>}
-function Info({icon,label,value}){return <div className="info">{icon}<small>{label}</small><strong>{value}</strong></div>}
-function Stat({icon,name,value}){return <div className="stat">{icon}<small>{name}</small><strong>{value}</strong></div>}
-function Card({icon,title,text}){return <article><div className="card-icon">{icon}</div><h3>{title}</h3><p>{text}</p><span className="arrow">↗</span></article>}
+
+function Empty({text}) { return <div className="empty-state small"><Database/><p>{text}</p></div>; }
+function Info({icon,label,value}) { return <div className="info">{icon}<span>{label}</span><b>{value}</b></div>; }
+function Feature({icon,title,text}) { return <article className="feature"><div>{icon}</div><h3>{title}</h3><p>{text}</p><ChevronRight/></article>; }
+function Globe2Fallback(){ return <span className="globe-mark">◎</span>; }
 
 createRoot(document.getElementById('root')).render(<App/>);
