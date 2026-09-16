@@ -35,12 +35,23 @@ def normalize_profile(payload: Any, region: str, uid: str) -> dict:
     }
 
 
-def normalize_stats(payload: Any) -> dict:
+def normalize_stats(payload: Any, mode: str = "br") -> dict:
+    """Normalize the documented /playerstats aggregate.
+
+    The upstream endpoint returns BR-style solo/duo/quad aggregates and does
+    not expose a documented CS statistics query. For CS, callers must rely on
+    the profile's CS rank fields rather than duplicating BR data.
+    """
     if not isinstance(payload, dict):
         raise ValueError("Stats payload must be an object")
+    if mode == "cs":
+        return {"available": False, "mode": "cs", "reason": "Provider does not expose CS career statistics." , "raw": payload}
+
     source = payload.get("stats") or payload.get("data")
     if not isinstance(source, dict):
         source = payload
+    # Prefer quadStats because it is the broadest documented aggregate, then
+    # fall back to solo/duo if a provider variant omits it.
     candidates = [source.get("quadStats"), source.get("soloStats"), source.get("duoStats"), source.get("squad"), source]
     chosen = next((x for x in candidates if isinstance(x, dict) and x), source)
     detailed = chosen.get("detailedStats") if isinstance(chosen.get("detailedStats"), dict) else {}
@@ -51,11 +62,13 @@ def normalize_stats(payload: Any) -> dict:
         "kills": ("kills", "kill_count"),
         "deaths": ("deaths", "death_count"),
         "headshots": ("headshots", "headshot_kills"),
-        "rank": ("rank", "csRank", "cs_rank", "tier"),
+        "rank": ("rank", "tier"),
         "ranking_points": ("rankingPoints", "ranking_points", "rankPoints"),
         "kd": ("kd", "kdr", "kdRatio"),
         "win_rate": ("winRate", "win_rate", "winRatePercentage"),
     }
     normalized = {field: _first(merged, *keys) for field, keys in aliases.items()}
+    normalized["mode"] = "br"
+    normalized["available"] = True
     normalized["raw"] = payload
     return normalized
