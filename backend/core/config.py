@@ -11,6 +11,8 @@ class Settings:
     cache_ttl: int = int(os.getenv("CACHE_TTL", "300"))
     rate_limit: int = int(os.getenv("RATE_LIMIT", "60"))
     freefire_provider_url: str = os.getenv("FREEFIRE_PROVIDER_URL", "https://free-ff-api-src-5plp.onrender.com")
+    freefire_community_url: str = os.getenv("FREEFIRE_COMMUNITY_URL", "https://developers.freefirecommunity.com/api/v1")
+    freefire_community_api_key: str = os.getenv("FREEFIRE_COMMUNITY_API_KEY", "")
     provider_timeout: float = float(os.getenv("PROVIDER_TIMEOUT", "8"))
 
 
