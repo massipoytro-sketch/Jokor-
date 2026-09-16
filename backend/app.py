@@ -3,6 +3,7 @@ from flask_cors import CORS
 
 from api.routes import api
 from api.extended_routes import extended
+from api.protocol_routes import protocol
 from core.config import settings
 from core.errors import register_error_handlers
 from core.health import health_snapshot
@@ -26,12 +27,7 @@ def create_app() -> Flask:
         allowed, retry_after = limiter.allow(request.remote_addr or "unknown")
         if not allowed:
             metrics.record_error("RATE_LIMITED")
-            response = jsonify({
-                "success": False,
-                "error": "RATE_LIMITED",
-                "message": "Too many requests. Try again later.",
-                "request_id": get_request_id(),
-            })
+            response = jsonify({"success": False, "error": "RATE_LIMITED", "message": "Too many requests. Try again later.", "request_id": get_request_id()})
             response.status_code = 429
             response.headers["Retry-After"] = str(retry_after)
             return response
@@ -45,16 +41,11 @@ def create_app() -> Flask:
     register_error_handlers(app)
     app.register_blueprint(api, url_prefix="/api")
     app.register_blueprint(extended, url_prefix="/api")
+    app.register_blueprint(protocol, url_prefix="/api")
 
     @app.get("/")
     def root():
-        return jsonify({
-            "name": "Jokor API",
-            "status": "online",
-            "version": settings.version,
-            "docs": "/api/meta",
-            "health": "/api/health",
-        })
+        return jsonify({"name": "Jokor API", "status": "online", "version": settings.version, "docs": "/api/meta", "health": "/api/health"})
 
     @app.get("/api/system/metrics")
     def system_metrics():
