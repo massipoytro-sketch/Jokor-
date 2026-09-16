@@ -31,13 +31,10 @@ function App() {
       setPlayer(profile.data);
       setStatus('loading');
       const region = profile.metadata.region;
-      const [br, cs] = await Promise.allSettled([
-        endpoints.stats(region, target, 'br'),
-        endpoints.stats(region, target, 'cs')
-      ]);
+      const [br, cs] = await Promise.allSettled([endpoints.stats(region, target, 'br'), endpoints.stats(region, target, 'cs')]);
       setStats({ br: br.status === 'fulfilled' ? br.value.data : null, cs: cs.status === 'fulfilled' ? cs.value.data : null });
       setStatus('ready');
-      if (!br.value && !cs.value) setError('تم العثور على اللاعب، لكن الإحصائيات غير متاحة حاليًا.');
+      if (br.status !== 'fulfilled' && cs.status !== 'fulfilled') setError('تم العثور على اللاعب، لكن الإحصائيات غير متاحة حاليًا.');
     } catch (x) {
       setPlayer(null); setStats({ br: null, cs: null }); setStatus('error');
       setError(x.message || 'تعذر جلب بيانات اللاعب.');
@@ -124,6 +121,12 @@ function App() {
 
       <section className="features"><div className="section-kicker">BUILT FOR SPEED</div><div className="feature-grid"><Feature icon={<Crosshair/>} title="UID FIRST" text="واجهة واحدة وبسيطة: UID فقط، والباقي يتكفل به Jokor."/><Feature icon={<Globe2Fallback/>} title="AUTO REGION" text="اكتشاف المنطقة من مصدر البيانات بدل إجبار المستخدم على اختيارها."/><Feature icon={<BarChart3/>} title="REAL DATA" text="لا نعرض أرقامًا تجريبية. عند غياب المصدر نخبرك بوضوح."/><Feature icon={<Shield/>} title="SAFE BY DESIGN" text="لا كلمات مرور، لا access tokens، ولا أدوات لتعديل الحساب."/></div></section>
     </main>
+    <nav className="bottom-nav" aria-label="التنقل الرئيسي">
+      <button className={view==='scan'?'active':''} onClick={()=>{setView('scan');clear();}}><Crosshair/><span>Scan</span></button>
+      <button className={view==='compare'?'active':''} onClick={()=>{setView('compare');clear();}}><Swords/><span>Compare</span></button>
+      <button className={view==='guild'?'active':''} onClick={()=>{setView('guild');clear();}}><Users/><span>Guild</span></button>
+      <button className={view==='system'?'active':''} onClick={loadSystem}><Activity/><span>System</span></button>
+    </nav>
     <footer><b>JOKOR</b><span>PLAYER INTELLIGENCE · {new Date().getFullYear()}</span><code>{apiBase()}</code></footer>
   </div>;
 }
