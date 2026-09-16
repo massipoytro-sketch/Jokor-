@@ -2,6 +2,7 @@ from flask import Flask, jsonify, request
 from flask_cors import CORS
 
 from api.routes import api
+from api.extended_routes import extended
 from core.config import settings
 from core.errors import register_error_handlers
 from core.health import health_snapshot
@@ -43,6 +44,7 @@ def create_app() -> Flask:
 
     register_error_handlers(app)
     app.register_blueprint(api, url_prefix="/api")
+    app.register_blueprint(extended, url_prefix="/api")
 
     @app.get("/")
     def root():
