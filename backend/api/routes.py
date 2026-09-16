@@ -11,6 +11,8 @@ from services.player_service import PlayerService
 from services.search_service import SearchService
 from services.stats_service import StatsService
 from services.statistics import derive_metrics
+from adapters.freefire.client import FreeFireClient
+from adapters.freefire.normalizer import normalize_profile
 
 api = Blueprint("api", __name__)
 player_service = PlayerService()
@@ -20,6 +22,7 @@ guild_service = GuildService()
 asset_service = AssetService()
 analytics_service = AnalyticsService(stats_service)
 intelligence_service = IntelligenceService(player_service, stats_service)
+auto_client = FreeFireClient()
 
 
 def error(message, code, status=400, details=None):
@@ -42,13 +45,9 @@ def meta():
     return jsonify({
         "success": True,
         "name": "Jokor API",
-        "version": "2.1.0",
+        "version": "2.2.0",
         "request_id": get_request_id(),
-        "features": [
-            "player", "player_intelligence", "stats", "search", "guild", "assets", "analytics",
-            "derived_stats", "game_info", "region_directory", "catalog", "weapons", "characters",
-            "pets", "cosmetics", "vehicles", "seasons", "capabilities", "health", "ready", "metrics",
-        ],
+        "features": ["player", "player_auto", "player_intelligence", "stats", "search", "guild", "assets", "analytics", "derived_stats", "game_info", "region_directory", "catalog", "weapons", "characters", "pets", "cosmetics", "vehicles", "seasons", "capabilities", "health", "ready", "metrics"],
     })
 
 
@@ -73,12 +72,7 @@ def region_detail(region):
     code = normalize_region(region)
     if code not in SUPPORTED_REGIONS:
         return error(f"Unsupported region: {code}", "INVALID_REGION")
-    return jsonify({
-        "success": True,
-        "region": {"code": code, "group": region_group(code)},
-        "group_members": sorted(k for k, v in REGION_GROUPS.items() if v == region_group(code)),
-        "request_id": get_request_id(),
-    })
+    return jsonify({"success": True, "region": {"code": code, "group": region_group(code)}, "group_members": sorted(k for k, v in REGION_GROUPS.items() if v == region_group(code)), "request_id": get_request_id()})
 
 
 @api.get("/game-info")
@@ -110,6 +104,21 @@ def derive_stats():
         if isinstance(value, bool) or not isinstance(value, (int, float)) or value < 0:
             return error(f"'{key}' must be a non-negative number", "INVALID_STAT_VALUE")
     return jsonify({"success": True, "metrics": derive_metrics(stats), "request_id": get_request_id(), "source": "provided_counters"})
+
+
+@api.get("/player/auto/<uid>")
+def player_auto(uid):
+    uid = uid.strip()
+    if not validate_uid(uid):
+        return error("UID must be a positive numeric value", "INVALID_UID")
+    try:
+        region, payload = auto_client.detect_profile(uid)
+        profile = normalize_profile(payload, region, uid)
+        return jsonify({"success": True, "data": profile, "metadata": {"uid": uid, "region": region, "provider": "freefire-public", "detection": "automatic"}, "request_id": get_request_id()})
+    except LookupError as exc:
+        return error(str(exc), "PLAYER_NOT_FOUND", 404)
+    except Exception:
+        return error("The public player data source is temporarily unavailable.", "DATA_SOURCE_UNAVAILABLE", 503)
 
 
 @api.get("/player/<region>/<uid>")
