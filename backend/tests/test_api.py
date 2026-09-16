@@ -16,7 +16,24 @@ def test_health():
 def test_regions():
     response = client().get('/api/regions')
     assert response.status_code == 200
-    assert 'IND' in response.get_json()['regions']
+    payload = response.get_json()
+    assert payload['count'] >= 10
+    assert any(item['code'] == 'IND' for item in payload['regions'])
+
+
+def test_region_detail():
+    response = client().get('/api/regions/EU')
+    assert response.status_code == 200
+    assert response.get_json()['region']['group'] == 'EUROPE'
+
+
+def test_game_info():
+    response = client().get('/api/game-info')
+    assert response.status_code == 200
+    payload = response.get_json()['data']
+    assert payload['game'] == 'Free Fire'
+    assert {mode['id'] for mode in payload['modes']} == {'br', 'cs'}
+    assert len(payload['ranks']) >= 8
 
 
 def test_invalid_uid():
