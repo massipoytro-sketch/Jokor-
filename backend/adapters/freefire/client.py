@@ -33,10 +33,11 @@ class FreeFireClient:
         return self._get("/api/v1/account", {"region": region, "uid": uid})
 
     def get_stats(self, region: str, uid: str, mode: str) -> dict:
-        return self._get(
-            "/api/v1/playerstats",
-            {"region": region, "uid": uid, "gamemode": mode},
-        )
+        # The public upstream playerstats endpoint exposes its BR-style
+        # aggregate in one response; it does not document a gamemode query.
+        # Keep the Jokor mode argument for API compatibility, but never send
+        # an unsupported parameter upstream.
+        return self._get("/api/v1/playerstats", {"region": region, "uid": uid})
 
     @staticmethod
     def _payload_matches_uid(payload: dict, uid: str) -> bool:
@@ -50,12 +51,7 @@ class FreeFireClient:
         return False
 
     def detect_profile(self, uid: str) -> tuple[str, dict]:
-        """Automatically discover the player's actual region.
-
-        The upstream project documents the account endpoint for multiple
-        regions. We query them in parallel and only accept a response whose
-        account ID actually matches the requested UID.
-        """
+        """Automatically discover the player's actual supported region."""
         regions = sorted(SUPPORTED_REGIONS)
         successful_responses = 0
         errors = []
@@ -94,7 +90,6 @@ class FreeFireClient:
         return payload.get("infos") or payload.get("results") or [payload]
 
     def get_guild(self, region: str, guild_id: str) -> dict:
-        # The upstream API documents /guildInfo, not /guild.
         return self._get(
             "/api/v1/guildInfo",
             {"region": region, "guildID": guild_id},
