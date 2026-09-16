@@ -34,22 +34,44 @@ class FreeFireClient:
     def get_stats(self, region: str, uid: str, mode: str) -> dict:
         return self._get("/api/v1/playerstats", {"region": region, "uid": uid, "gamemode": mode})
 
+    @staticmethod
+    def _payload_matches_uid(payload: dict, uid: str) -> bool:
+        """Accept the common public-provider response shapes.
+
+        Some provider responses omit accountId and put the identity directly
+        in the top-level object, so requiring accountId caused false 404s.
+        """
+        basic = payload.get("basicInfo") or payload.get("basic_info") or payload
+        if not isinstance(basic, dict):
+            return False
+        for key in ("accountId", "uid", "account_id", "playerId", "player_id"):
+            value = basic.get(key)
+            if value is not None:
+                return str(value) == str(uid)
+        # A response containing recognizable profile fields is still a valid
+        # profile response when this provider does not echo the UID.
+        return any(basic.get(key) is not None for key in ("nickname", "name", "accountName", "level", "liked", "likes"))
+
     def detect_profile(self, uid: str) -> tuple[str, dict]:
         """Find a UID's region without asking the user to choose a server."""
         regions = sorted(SUPPORTED_REGIONS)
         errors = []
+        successful_responses = 0
         with ThreadPoolExecutor(max_workers=min(8, len(regions))) as pool:
             futures = {pool.submit(self.get_profile, region, uid): region for region in regions}
             for future in as_completed(futures):
                 region = futures[future]
                 try:
                     payload = future.result()
-                    basic = payload.get("basicInfo") or payload.get("basic_info") or payload
-                    if isinstance(basic, dict) and str(basic.get("accountId", uid)) == str(uid):
-                        detected = str(basic.get("region") or region).upper()
+                    successful_responses += 1
+                    if self._payload_matches_uid(payload, uid):
+                        basic = payload.get("basicInfo") or payload.get("basic_info") or payload
+                        detected = str((basic.get("region") if isinstance(basic, dict) else None) or region).upper()
                         return detected, payload
                 except Exception as exc:
                     errors.append(f"{region}:{type(exc).__name__}")
+        if successful_responses == 0:
+            raise RuntimeError("The Free Fire public data provider did not respond successfully. Please try again in a moment.")
         raise LookupError("Player was not found in the supported regions.")
 
     def search(self, region: str, keyword: str) -> list:
