@@ -1,9 +1,10 @@
 from flask import Blueprint, jsonify, request
 
-from core.regions import SUPPORTED_REGIONS
+from core.regions import REGION_GROUPS, SUPPORTED_REGIONS, normalize_region, region_group
 from core.request_id import get_request_id
 from services.analytics_service import AnalyticsService
 from services.asset_service import AssetService
+from services.game_info import catalog as game_catalog, mode as game_mode
 from services.guild_service import GuildService
 from services.player_service import PlayerService
 from services.search_service import SearchService
@@ -31,7 +32,7 @@ def validate_uid(uid):
 
 
 def validate_region(region):
-    return region.upper().strip() in SUPPORTED_REGIONS
+    return normalize_region(region) in SUPPORTED_REGIONS
 
 
 @api.get("/meta")
@@ -39,9 +40,12 @@ def meta():
     return jsonify({
         "success": True,
         "name": "Jokor API",
-        "version": "1.0.0",
+        "version": "1.1.0",
         "request_id": get_request_id(),
-        "features": ["player", "stats", "search", "guild", "assets", "analytics", "derived_stats", "health"],
+        "features": [
+            "player", "stats", "search", "guild", "assets", "analytics",
+            "derived_stats", "game_info", "region_directory", "health",
+        ],
     })
 
 
@@ -57,12 +61,41 @@ def ready():
 
 @api.get("/regions")
 def regions():
-    return jsonify({"success": True, "regions": sorted(SUPPORTED_REGIONS), "count": len(SUPPORTED_REGIONS)})
+    entries = [
+        {"code": code, "group": region_group(code)}
+        for code in sorted(SUPPORTED_REGIONS)
+    ]
+    return jsonify({"success": True, "regions": entries, "count": len(entries)})
+
+
+@api.get("/regions/<region>")
+def region_detail(region):
+    code = normalize_region(region)
+    if code not in SUPPORTED_REGIONS:
+        return error(f"Unsupported region: {code}", "INVALID_REGION")
+    return jsonify({
+        "success": True,
+        "region": {"code": code, "group": region_group(code)},
+        "group_members": sorted(k for k, v in REGION_GROUPS.items() if v == region_group(code)),
+        "request_id": get_request_id(),
+    })
+
+
+@api.get("/game-info")
+def game_info():
+    return jsonify({"success": True, "data": game_catalog(), "request_id": get_request_id()})
+
+
+@api.get("/game-info/modes/<mode_id>")
+def game_mode_info(mode_id):
+    info = game_mode(mode_id)
+    if info is None:
+        return error("Mode must be 'br' or 'cs'", "INVALID_MODE")
+    return jsonify({"success": True, "data": info, "request_id": get_request_id()})
 
 
 @api.post("/tools/derive-stats")
 def derive_stats():
-    """Calculate rates from counters supplied by a trusted data source or user."""
     body = request.get_json(silent=True)
     if not isinstance(body, dict):
         return error("Request body must be a JSON object", "INVALID_BODY")
@@ -86,7 +119,7 @@ def derive_stats():
 
 @api.get("/player/<region>/<uid>")
 def player(region, uid):
-    region = region.upper().strip()
+    region = normalize_region(region)
     uid = uid.strip()
     if not validate_region(region):
         return error(f"Unsupported region: {region}", "INVALID_REGION")
@@ -97,7 +130,7 @@ def player(region, uid):
 
 @api.get("/player/<region>/<uid>/stats")
 def player_stats(region, uid):
-    region, uid = region.upper().strip(), uid.strip()
+    region, uid = normalize_region(region), uid.strip()
     if not validate_region(region) or not validate_uid(uid):
         return error("Invalid region or UID", "INVALID_REQUEST")
     mode = request.args.get("mode", "br").lower()
@@ -108,7 +141,7 @@ def player_stats(region, uid):
 
 @api.get("/player/<region>/<uid>/compare/<other_uid>")
 def compare(region, uid, other_uid):
-    region, uid, other_uid = region.upper().strip(), uid.strip(), other_uid.strip()
+    region, uid, other_uid = normalize_region(region), uid.strip(), other_uid.strip()
     if not validate_region(region) or not validate_uid(uid) or not validate_uid(other_uid):
         return error("Invalid region or UID", "INVALID_REQUEST")
     return jsonify(analytics_service.compare(region, uid, other_uid))
@@ -116,7 +149,7 @@ def compare(region, uid, other_uid):
 
 @api.get("/search/<region>/<keyword>")
 def search(region, keyword):
-    region = region.upper().strip()
+    region = normalize_region(region)
     if not validate_region(region):
         return error(f"Unsupported region: {region}", "INVALID_REGION")
     if len(keyword.strip()) < 2:
@@ -126,7 +159,7 @@ def search(region, keyword):
 
 @api.get("/guild/<region>/<guild_id>")
 def guild(region, guild_id):
-    region = region.upper().strip()
+    region = normalize_region(region)
     if not validate_region(region) or not guild_id.isdigit():
         return error("Invalid region or guild ID", "INVALID_REQUEST")
     return jsonify(guild_service.get_guild(region, guild_id))
