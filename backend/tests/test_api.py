@@ -19,12 +19,13 @@ def test_regions():
     payload = response.get_json()
     assert payload['count'] >= 10
     assert any(item['code'] == 'IND' for item in payload['regions'])
+    assert not any(item['code'] == 'EU' for item in payload['regions'])
 
 
 def test_region_detail():
-    response = client().get('/api/regions/EU')
+    response = client().get('/api/regions/ME')
     assert response.status_code == 200
-    assert response.get_json()['region']['group'] == 'EUROPE'
+    assert response.get_json()['region']['group'] == 'GLOBAL'
 
 
 def test_game_info():
@@ -83,13 +84,13 @@ def test_player_intelligence_validation_and_safe_fallback():
     assert payload['data']['available_sections'] == []
 
 
-def test_player_comparison_returns_br_and_cs_sections():
+def test_player_comparison_returns_real_br_and_explicit_cs_unavailable():
     response = client().get('/api/player/IND/123456789/compare/987654321')
     assert response.status_code == 200
     payload = response.get_json()
     assert payload['success'] is False
     assert payload['comparison']['br']['win_rate']['delta_a_minus_b'] is None
-    assert payload['comparison']['cs']['headshot_rate']['delta_a_minus_b'] is None
+    assert payload['comparison']['cs']['available'] is False
     assert payload['players']['a']['uid'] == '123456789'
     assert payload['players']['b']['uid'] == '987654321'
 
@@ -100,11 +101,10 @@ def test_invalid_uid():
     assert response.get_json()['error'] == 'INVALID_UID'
 
 
-def test_unknown_player_provider_is_safe():
-    response = client().get('/api/player/IND/123456789')
-    assert response.status_code == 200
-    assert response.get_json()['success'] is False
-    assert response.get_json()['error'] == 'DATA_SOURCE_NOT_CONFIGURED'
+def test_unsupported_region_is_rejected():
+    response = client().get('/api/player/EU/123456789')
+    assert response.status_code == 400
+    assert response.get_json()['error'] == 'INVALID_REGION'
 
 
 def test_system_metrics():
