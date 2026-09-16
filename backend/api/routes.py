@@ -6,6 +6,7 @@ from services.analytics_service import AnalyticsService
 from services.asset_service import AssetService
 from services.game_info import catalog as game_catalog, mode as game_mode
 from services.guild_service import GuildService
+from services.intelligence_service import IntelligenceService
 from services.player_service import PlayerService
 from services.search_service import SearchService
 from services.stats_service import StatsService
@@ -18,6 +19,7 @@ search_service = SearchService()
 guild_service = GuildService()
 asset_service = AssetService()
 analytics_service = AnalyticsService(stats_service)
+intelligence_service = IntelligenceService(player_service, stats_service)
 
 
 def error(message, code, status=400, details=None):
@@ -40,13 +42,12 @@ def meta():
     return jsonify({
         "success": True,
         "name": "Jokor API",
-        "version": "2.0.0",
+        "version": "2.1.0",
         "request_id": get_request_id(),
         "features": [
-            "player", "stats", "search", "guild", "assets", "analytics",
-            "derived_stats", "game_info", "region_directory", "catalog",
-            "weapons", "characters", "pets", "cosmetics", "vehicles",
-            "seasons", "capabilities", "health", "ready", "metrics",
+            "player", "player_intelligence", "stats", "search", "guild", "assets", "analytics",
+            "derived_stats", "game_info", "region_directory", "catalog", "weapons", "characters",
+            "pets", "cosmetics", "vehicles", "seasons", "capabilities", "health", "ready", "metrics",
         ],
     })
 
@@ -108,12 +109,7 @@ def derive_stats():
     for key, value in stats.items():
         if isinstance(value, bool) or not isinstance(value, (int, float)) or value < 0:
             return error(f"'{key}' must be a non-negative number", "INVALID_STAT_VALUE")
-    return jsonify({
-        "success": True,
-        "metrics": derive_metrics(stats),
-        "request_id": get_request_id(),
-        "source": "provided_counters",
-    })
+    return jsonify({"success": True, "metrics": derive_metrics(stats), "request_id": get_request_id(), "source": "provided_counters"})
 
 
 @api.get("/player/<region>/<uid>")
@@ -125,6 +121,14 @@ def player(region, uid):
     if not validate_uid(uid):
         return error("UID must be a positive numeric value", "INVALID_UID")
     return jsonify(player_service.get_profile(region, uid))
+
+
+@api.get("/player/<region>/<uid>/intelligence")
+def player_intelligence(region, uid):
+    region, uid = normalize_region(region), uid.strip()
+    if not validate_region(region) or not validate_uid(uid):
+        return error("Invalid region or UID", "INVALID_REQUEST")
+    return jsonify(intelligence_service.scan(region, uid))
 
 
 @api.get("/player/<region>/<uid>/stats")
