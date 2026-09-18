@@ -11,8 +11,8 @@ from services.player_service import PlayerService
 from services.search_service import SearchService
 from services.stats_service import StatsService
 from services.statistics import derive_metrics
-from adapters.freefire.client import FreeFireClient
 from adapters.freefire.normalizer import normalize_profile
+from services.provider_service import provider_hub
 
 api = Blueprint("api", __name__)
 player_service = PlayerService()
@@ -22,7 +22,6 @@ guild_service = GuildService()
 asset_service = AssetService()
 analytics_service = AnalyticsService(stats_service)
 intelligence_service = IntelligenceService(player_service, stats_service)
-auto_client = FreeFireClient()
 
 
 def error(message, code, status=400, details=None):
@@ -112,9 +111,11 @@ def player_auto(uid):
     if not validate_uid(uid):
         return error("UID must be a positive numeric value", "INVALID_UID")
     try:
-        region, payload = auto_client.detect_profile(uid)
-        profile = normalize_profile(payload, region, uid)
-        return jsonify({"success": True, "data": profile, "metadata": {"uid": uid, "region": region, "provider": "freefire-public", "detection": "automatic"}, "request_id": get_request_id()})
+        detected, provider_name = provider_hub.detect_profile(uid)
+        region, profile = detected
+        # ProviderHub returns an already-normalized profile; keep one stable
+        # response shape so the frontend does not need provider-specific logic.
+        return jsonify({"success": True, "data": profile, "metadata": {"uid": uid, "region": region, "provider": provider_name, "detection": "automatic"}, "request_id": get_request_id()})
     except LookupError as exc:
         return error(str(exc), "PLAYER_NOT_FOUND", 404)
     except Exception:
